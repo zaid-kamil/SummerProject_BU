@@ -1,1 +1,6 @@
-# SummerProject_BU
+# SummerProject at Trainedge
+## team members
+- Ridima
+- Riya
+- Savita
+- Shivi
