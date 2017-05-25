@@ -80,6 +80,7 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb1239348297101092</string>
     <string name="twitter_consumer_key" translatable="false">YOURCONSUMERKEY</string>
     <string name="twitter_consumer_secret" translatable="false">YOURCONSUMERSECRET</string>
+    <string name="title_activity_place_selection">Select a location</string>
 
 </resources>
 
