@@ -1,16 +1,22 @@
 package trainedge.bu_pro;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.os.ResultReceiver;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,16 +40,22 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static trainedge.bu_pro.R.id.fab;
+import static trainedge.bu_pro.R.id.tvAddress;
+
 public class PlaceSelectionActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final int REQUEST_MAP_PERMISSION = 333;
     private static final int REQUEST_CHECK_SETTINGS = 545;
     private static final String LOCATION_KEY = "myLocation";
+    public static final String ADDRESS_EXTRA = "trainedge.bu_pro.address_extra";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location location;
     private TextView tvAddress;
+    private AddressResultReceiver mReceiver;
+    private FloatingActionButton fabConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +71,18 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
 
         }
         tvAddress = (TextView) findViewById(R.id.tvAddress);
+        fabConfirm = (FloatingActionButton) findViewById(R.id.fbMap);
+
+        fabConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(PlaceSelectionActivity.this,ProfileCreationActivity.class);
+                i.putExtra(ADDRESS_EXTRA,tvAddress.getText().toString());
+                startActivity(i);
+                finish();
+            }
+        });
+        mReceiver =  new AddressResultReceiver(new Handler());
         handlePermission();
 
     }
@@ -136,6 +160,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
             @Override
             public void onMapLongClick(LatLng latLng) {
 
+                startIntentService(latLng);
             }
         });
 
@@ -143,9 +168,9 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
 
     private void displayLocation(Location location) {
         // Add a marker in Sydney and move the camera
-        LatLng myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+        LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in Sydney"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,17));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17));
         CircleOptions co = new CircleOptions();
         co.center(myLocation);
         co.radius(200);
@@ -185,7 +210,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
                 LocationSettingsStates states = lsResult.getLocationSettingsStates();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                       startLocationUpdates();
+                        startLocationUpdates();
 
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -227,8 +252,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
@@ -265,4 +289,37 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    protected void startIntentService(LatLng latLng) {
+        Intent intent = new Intent(this, FetchAddressService.class);
+        intent.putExtra(FetchAddressService.Constants.RECEIVER, mReceiver);
+        intent.putExtra(FetchAddressService.Constants.LOCATION_DATA_EXTRA, latLng);
+        startService(intent);
+    }
+
+    private class AddressResultReceiver extends ResultReceiver {
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            String address = resultData.getString(FetchAddressService.Constants.RESULT_DATA_KEY);
+            displayAddress(address);
+        }
+
+
+
+        /**
+         * Create a new ResultReceive to receive results.  Your
+         * {@link #onReceiveResult} method will be called from the thread running
+         * <var>handler</var> if given, or from an arbitrary thread if null.
+         *
+         * @param handler
+         */
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+    }
+
+    private void displayAddress(String address) {
+        tvAddress.setText(address);
+        fabConfirm.setVisibility(View.VISIBLE);
+    }
 }

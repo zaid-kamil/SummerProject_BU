@@ -81,6 +81,9 @@
     <string name="twitter_consumer_key" translatable="false">YOURCONSUMERKEY</string>
     <string name="twitter_consumer_secret" translatable="false">YOURCONSUMERSECRET</string>
     <string name="title_activity_place_selection">Select a location</string>
+    <string name="service_not_available">service Not available</string>
+    <string name="invalid_lat_long_used">Invalid Longitude and Latitude</string>
+    <string name="no_address_found">No Address Found</string>
 
 </resources>
 
