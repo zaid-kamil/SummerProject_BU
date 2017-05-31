@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="4dp"
+        android:layout_margin="8dp"
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView
@@ -23,11 +23,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
-                android:textStyle="bold"
                 android:drawableLeft="@drawable/ic_location_city_black_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
-                android:text="Address" />
+                android:text="Address"
+                android:textStyle="bold" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabChoose"
@@ -50,7 +50,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="12dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -59,10 +59,11 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Latitude"
+                    android:textSize="16dp"
                     android:drawableLeft="@drawable/ic_location_on_black_24dp"
                     android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:text="Latitude"
                     android:textAlignment="center"
                     android:textStyle="bold" />
 
@@ -77,6 +78,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:text="Longitude"
+                    android:textSize="16dp"
                     android:textAlignment="center"
                     android:textStyle="bold" />
 
@@ -87,72 +89,74 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Profile Settings"
-            android:textStyle="bold"
-            android:textColor="@color/tw__solid_white"/>
+            android:textColor="@color/tw__solid_white"
+            android:textStyle="bold" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="1dp"
             android:background="@android:color/darker_gray"
-            />
+            android:minHeight="1dp" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="8dp">
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="16dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ringtone"
-                    android:textStyle="bold"
                     android:drawableLeft="@drawable/ic_audiotrack_black_24dp"
-                    android:gravity="center_vertical"
                     android:drawablePadding="8dp"
-                    />
+                    android:gravity="center_vertical"
+                    android:text="Ringtone"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
                 <Spinner
-                    android:id="@+id/spinner1"
+                    android:id="@+id/spr_ringtone"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                </Spinner>
+                    android:layout_height="match_parent"></Spinner>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
-
-
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="4dp">
+            android:layout_margin="8dp">
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="16dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Notifications"
                     android:drawableLeft="@drawable/ic_notifications_black_24dp"
-                    android:textStyle="bold"
-                    android:gravity="center_vertical"
                     android:drawablePadding="8dp"
-                    />
+                    android:gravity="center_vertical"
+                    android:text="Notification"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
                 <Spinner
-                    android:id="@+id/spinner2"
+                    android:id="@+id/spr_notification"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                </Spinner>
+                    android:layout_height="match_parent"></Spinner>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -162,12 +166,12 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="16dp"
                 android:orientation="horizontal">
 
 
                 <Switch
-                    android:id="@+id/switch1"
+                    android:id="@+id/switch_vibrate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -175,6 +179,7 @@
                     android:drawableLeft="@drawable/ic_vibration_black_24dp"
                     android:drawablePadding="8dp"
                     android:text="Vibration"
+                    android:textSize="16dp"
                     android:textStyle="bold"></Switch>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
@@ -188,12 +193,12 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="16dp"
                 android:orientation="horizontal">
 
 
                 <Switch
-                    android:id="@+id/switch2"
+                    android:id="@+id/switch_silent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -202,6 +207,8 @@
 
                     android:drawablePadding="8dp"
                     android:text="Silent"
+                    android:textSize="16dp"
+
                     android:textStyle="bold"></Switch>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
@@ -211,19 +218,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="4dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Volume"
-                android:textStyle="bold" />
-            <SeekBar
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"/>
+                android:layout_margin="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Volume"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <SeekBar
+                    android:id="@+id/seekbar1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp" />
 
             </RelativeLayout>
         </android.support.v7.widget.CardView>
