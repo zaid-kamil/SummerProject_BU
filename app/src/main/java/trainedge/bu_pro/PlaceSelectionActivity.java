@@ -76,13 +76,13 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
         fabConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(PlaceSelectionActivity.this,ProfileCreationActivity.class);
-                i.putExtra(ADDRESS_EXTRA,tvAddress.getText().toString());
+                Intent i = new Intent(PlaceSelectionActivity.this, ProfileCreationActivity.class);
+                i.putExtra(ADDRESS_EXTRA, tvAddress.getText().toString());
                 startActivity(i);
                 finish();
             }
         });
-        mReceiver =  new AddressResultReceiver(new Handler());
+        mReceiver = new AddressResultReceiver(new Handler());
         handlePermission();
 
     }
@@ -135,13 +135,23 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
     }
 
     protected void onStart() {
-        mGoogleApiClient.connect();
+        try {
+            mGoogleApiClient.connect();
+        } catch (Exception e) {
+
+        }
         super.onStart();
+
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        try {
+            mGoogleApiClient.disconnect();
+        } catch (Exception e) {
+
+        }
         super.onStop();
+
     }
 
     /**
@@ -303,7 +313,6 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
             String address = resultData.getString(FetchAddressService.Constants.RESULT_DATA_KEY);
             displayAddress(address);
         }
-
 
 
         /**

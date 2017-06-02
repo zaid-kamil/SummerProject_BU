@@ -7,6 +7,7 @@ import android.media.RingtoneManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,23 +35,27 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     private AudioManager audioManager = null;
     private Switch switch_vibrate;
     private Switch switch_silent;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_profile_creation);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         fabChoose = (FloatingActionButton) findViewById(R.id.fabChoose);
         spr_ringtone = (Spinner) findViewById(R.id.spr_ringtone);
         switch_vibrate = (Switch) findViewById(R.id.switch_vibrate);
         switch_silent = (Switch) findViewById(R.id.switch_silent);
         spr_notification = (Spinner) findViewById(R.id.spr_notification);
-        seekbar1= (SeekBar) findViewById(R.id.seekbar1);
+        seekbar1 = (SeekBar) findViewById(R.id.seekbar1);
         Map<String, String> myringtone = getRingtones();
         Map<String, String> mynotification = getNotifications();
-        ArrayList<String> strings = new ArrayList<>(list.values());
-        ArrayList<String> strings1 = new ArrayList<>(list.values());
+        ArrayList<String> strings = new ArrayList<>(myringtone.keySet());
+        ArrayList<String> strings1 = new ArrayList<>(mynotification.keySet());
         final ArrayAdapter<String> adapter_ringtone = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, strings);
         final ArrayAdapter<String> adapter_notification = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, strings1);
         fabChoose.setOnClickListener(this);
