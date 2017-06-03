@@ -15,13 +15,14 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static trainedge.bu_pro.R.id.tv1;
+
 
 public class ProfileCreationActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -32,10 +33,16 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     public Map<String, String> list;
 
     private SeekBar seekbar1 = null;
+
     private AudioManager audioManager = null;
     private Switch switch_vibrate;
     private Switch switch_silent;
     private Toolbar toolbar;
+    private Bundle extras;
+    private TextView tv_address;
+    private TextView tv_lng;
+    private TextView tv_lat;
+    private TextView tv_pname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,10 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_profile_creation);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        tv_pname = (TextView) findViewById(R.id.tv_pname);
+        tv_lat = (TextView) findViewById(R.id.tv_lat);
+        tv_lng = (TextView) findViewById(R.id.tv_lng);
+        tv_address = (TextView) findViewById(R.id.tv_address);
         fabChoose = (FloatingActionButton) findViewById(R.id.fabChoose);
         spr_ringtone = (Spinner) findViewById(R.id.spr_ringtone);
         switch_vibrate = (Switch) findViewById(R.id.switch_vibrate);
@@ -129,8 +140,32 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
   */
     @Override
     public void onClick(View v) {
-        Intent i = new Intent(this, PlaceSelectionActivity.class);
-        startActivityForResult(i, REQUEST_ADDRESS);
+        switch (v.getId()){
+            case R.id.fbMap:
+                Intent i = new Intent(this, PlaceSelectionActivity.class);
+                startActivityForResult(i, REQUEST_ADDRESS);
+                break;
+            case R.id.btnConfirm:
+                validateData();
+                break;
+        }
+    }
+
+    private void validateData() {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode ==  RESULT_OK){
+            if(requestCode == REQUEST_ADDRESS){
+                extras = data.getExtras();
+              tv_address.setText(extras.getString(PlaceSelectionActivity.ADDRESS_EXTRA));
+                tv_lat.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LAT_EXTRA)));
+                tv_lng.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LNG_EXTRA)));
+                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public Map<String, String> getRingtones() {

@@ -49,6 +49,8 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
     private static final int REQUEST_CHECK_SETTINGS = 545;
     private static final String LOCATION_KEY = "myLocation";
     public static final String ADDRESS_EXTRA = "trainedge.bu_pro.address_extra";
+    public static final String LAT_EXTRA = "trainedge.bu_pro.lat_extra";
+    public static final String LNG_EXTRA = "trainedge.bu_pro.lng_extra";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -56,6 +58,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
     private TextView tvAddress;
     private AddressResultReceiver mReceiver;
     private FloatingActionButton fabConfirm;
+    private LatLng latLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +79,12 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
         fabConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(PlaceSelectionActivity.this, ProfileCreationActivity.class);
+                Intent i = new Intent();
                 i.putExtra(ADDRESS_EXTRA, tvAddress.getText().toString());
-                startActivity(i);
+
+                i.putExtra(LAT_EXTRA, latLng.latitude);
+                i.putExtra(LNG_EXTRA, latLng.longitude);
+                setResult(RESULT_OK, i);
                 finish();
             }
         });
@@ -198,7 +204,6 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Toast.makeText(this, "Connnected", Toast.LENGTH_SHORT).show();
-
         handleLocationSetting();
 
     }
@@ -303,6 +308,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
         Intent intent = new Intent(this, FetchAddressService.class);
         intent.putExtra(FetchAddressService.Constants.RECEIVER, mReceiver);
         intent.putExtra(FetchAddressService.Constants.LOCATION_DATA_EXTRA, latLng);
+        this.latLng = latLng;
         startService(intent);
     }
 
