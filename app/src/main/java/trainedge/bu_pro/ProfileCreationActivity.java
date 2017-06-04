@@ -89,7 +89,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         spr_ringtone.setAdapter(adapter_ringtone);
         spr_notification.setAdapter(adapter_notification);
         btnConfirm = (Button) findViewById(R.id.btnConfirm);
-
+        btnConfirm.setOnClickListener(this);
         spr_ringtone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -171,6 +171,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     }
 
     private void validateData() {
+        //show  progess
         String address = tv_address.getText().toString().trim();
         if (address.isEmpty()) {
             tv_address.setError("First select a Place");
@@ -211,7 +212,8 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             ), new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    if(databaseError != null)
+                    //hide progrss bar
+                    if(databaseError == null)
                     {
                         Toast.makeText(ProfileCreationActivity.this, "Success", Toast.LENGTH_SHORT).show();
                         finish();
