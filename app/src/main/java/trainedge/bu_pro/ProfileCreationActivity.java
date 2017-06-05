@@ -20,6 +20,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -184,11 +186,11 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         }
         String lng = tv_lng.getText().toString().trim();
 
-        if (et_pname ==null) {
+        if (et_pname == null) {
             et_pname.setError("First select a Place");
             return;
         }
-        String pname = et_pname.getText().toString().trim();
+        final String pname = et_pname.getText().toString().trim();
 
         if (lng.isEmpty()) {
             tv_lng.setError("First select a Place");
@@ -202,24 +204,38 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             String key2 = spr_notification.getSelectedItem().toString();
             String notification = mynotification.get(key2);
 
-            double latVal = Double.parseDouble(lat);
-            double lngVal =Double.parseDouble(lng);
+            final double latVal = Double.parseDouble(lat);
+            final double lngVal = Double.parseDouble(lng);
 
-            FirebaseDatabase db= FirebaseDatabase.getInstance();
-            DatabaseReference dbref = db.getReference(PROFILE);
-            dbref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).push().setValue(new SoundProfile(
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            final DatabaseReference dbref = db.getReference(PROFILE);
+            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            dbref.child(uid).push().setValue(new SoundProfile(
                     address, ringtone, notification, pname, latVal, lngVal, switch_silent.isChecked(), switch_vibrate.isChecked(), false, seekbar1.getProgress()
             ), new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     //hide progrss bar
-                    if(databaseError == null)
-                    {
-                        Toast.makeText(ProfileCreationActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                    else{
-                        Toast.makeText(ProfileCreationActivity.this, "Failure "+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (databaseError == null) {
+                        Toast.makeText(ProfileCreationActivity.this, "profile created", Toast.LENGTH_SHORT).show();
+                        //setup geofire for geofencing
+                        DatabaseReference geofireRef = dbref.child(uid).child("geofire");
+                        GeoFire geoFire = new GeoFire(geofireRef);
+                        geoFire.setLocation(pname, new GeoLocation(latVal, lngVal), new GeoFire.CompletionListener() {
+                            @Override
+                            public void onComplete(String key, DatabaseError error) {
+                                if (error == null) {
+                                    Toast.makeText(ProfileCreationActivity.this, "geofence created", Toast.LENGTH_SHORT).show();
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(ProfileCreationActivity.this, "Geofence could not be created", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(ProfileCreationActivity.this, "Failure " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
