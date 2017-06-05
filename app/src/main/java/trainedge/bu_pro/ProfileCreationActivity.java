@@ -266,7 +266,6 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
                 tv_address.setText(extras.getString(PlaceSelectionActivity.ADDRESS_EXTRA));
                 tv_lat.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LAT_EXTRA)));
                 tv_lng.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LNG_EXTRA)));
-                Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -287,7 +286,6 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     }
 
     public Map<String, String> getNotifications() {
-        Toast.makeText(this, "yyy", Toast.LENGTH_SHORT).show();
         RingtoneManager manager = new RingtoneManager(this);
         manager.setType(RingtoneManager.TYPE_NOTIFICATION);
         Cursor cursor = manager.getCursor();
