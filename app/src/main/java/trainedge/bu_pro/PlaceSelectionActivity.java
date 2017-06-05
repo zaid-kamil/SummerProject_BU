@@ -81,13 +81,13 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
             public void onClick(View view) {
                 Intent i = new Intent();
                 i.putExtra(ADDRESS_EXTRA, tvAddress.getText().toString());
-
                 i.putExtra(LAT_EXTRA, latLng.latitude);
                 i.putExtra(LNG_EXTRA, latLng.longitude);
                 setResult(RESULT_OK, i);
                 finish();
             }
         });
+
         mReceiver = new AddressResultReceiver(new Handler());
         handlePermission();
 

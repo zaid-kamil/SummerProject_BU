@@ -4,7 +4,9 @@ package trainedge.bu_pro.models;
  * Created by CISE on 03/06/2017.
  */
 
-public class SoundProfile {
+public class
+
+SoundProfile {
     private String address, ringtone, notification, profile;
     private double lat, lng;
     private boolean isSilent, isVibrate, isActive;

@@ -97,9 +97,11 @@ public class SplashActivity extends AppCompatActivity {
 
             showSnackbar("Unknown response");
         }
+
     }
 
     private void showSnackbar(String str) {
         Snackbar.make(toolbar,str,Snackbar.LENGTH_LONG).show();
     }
 }
+

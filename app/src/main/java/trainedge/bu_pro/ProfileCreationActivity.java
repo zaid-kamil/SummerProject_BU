@@ -11,28 +11,38 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import trainedge.bu_pro.models.SoundProfile;
 
 
 public class ProfileCreationActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     public static final int REQUEST_ADDRESS = 22;
     public static final String ADDRESS_EXTRAS = "trainedge.bu_pro.address_extra";
+    public static final String PROFILE = "soundprofiles";
     private FloatingActionButton fabChoose;
     private Spinner spr_ringtone, spr_notification;
     public Map<String, String> list;
 
     private SeekBar seekbar1 = null;
+
 
     private AudioManager audioManager = null;
     private Switch switch_vibrate;
@@ -43,6 +53,10 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     private TextView tv_lng;
     private TextView tv_lat;
     private TextView tv_pname;
+    private Button btnConfirm;
+    private EditText et_pname;
+    private Map<String, String> myringtone;
+    private Map<String, String> mynotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +67,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_profile_creation);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        tv_pname = (TextView) findViewById(R.id.tv_pname);
+        et_pname = (EditText) findViewById(R.id.et_pname);
         tv_lat = (TextView) findViewById(R.id.tv_lat);
         tv_lng = (TextView) findViewById(R.id.tv_lng);
         tv_address = (TextView) findViewById(R.id.tv_address);
@@ -63,8 +77,8 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         switch_silent = (Switch) findViewById(R.id.switch_silent);
         spr_notification = (Spinner) findViewById(R.id.spr_notification);
         seekbar1 = (SeekBar) findViewById(R.id.seekbar1);
-        Map<String, String> myringtone = getRingtones();
-        Map<String, String> mynotification = getNotifications();
+        myringtone = getRingtones();
+        mynotification = getNotifications();
         ArrayList<String> strings = new ArrayList<>(myringtone.keySet());
         ArrayList<String> strings1 = new ArrayList<>(mynotification.keySet());
         final ArrayAdapter<String> adapter_ringtone = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, strings);
@@ -74,6 +88,8 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         adapter_notification.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spr_ringtone.setAdapter(adapter_ringtone);
         spr_notification.setAdapter(adapter_notification);
+        btnConfirm = (Button) findViewById(R.id.btnConfirm);
+
         spr_ringtone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -100,6 +116,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
         switch_silent.setOnCheckedChangeListener(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 //        initControls();
+
     }
 
 
@@ -140,27 +157,81 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
   */
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.fbMap:
+        switch (v.getId()) {
+            case R.id.fabChoose:
                 Intent i = new Intent(this, PlaceSelectionActivity.class);
                 startActivityForResult(i, REQUEST_ADDRESS);
                 break;
             case R.id.btnConfirm:
                 validateData();
                 break;
+            default:
+                break;
         }
     }
 
     private void validateData() {
+        String address = tv_address.getText().toString().trim();
+        if (address.isEmpty()) {
+            tv_address.setError("First select a Place");
+            return;
+        }
+        String lat = tv_lat.getText().toString().trim();
+        if (lat.isEmpty()) {
+            tv_lat.setError("First select a Place");
+            return;
+        }
+        String lng = tv_lng.getText().toString().trim();
+
+        if (et_pname ==null) {
+            et_pname.setError("First select a Place");
+            return;
+        }
+        String pname = et_pname.getText().toString().trim();
+
+        if (lng.isEmpty()) {
+            tv_lng.setError("First select a Place");
+            return;
+        }
+        if (switch_silent.isChecked()) {
+
+        } else {
+            String key = spr_ringtone.getSelectedItem().toString();
+            String ringtone = myringtone.get(key);
+            String key2 = spr_notification.getSelectedItem().toString();
+            String notification = mynotification.get(key2);
+
+            double latVal = Double.parseDouble(lat);
+            double lngVal =Double.parseDouble(lng);
+
+            FirebaseDatabase db= FirebaseDatabase.getInstance();
+            DatabaseReference dbref = db.getReference(PROFILE);
+            dbref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).push().setValue(new SoundProfile(
+                    address, ringtone, notification, pname, latVal, lngVal, switch_silent.isChecked(), switch_vibrate.isChecked(), false, seekbar1.getProgress()
+            ), new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if(databaseError != null)
+                    {
+                        Toast.makeText(ProfileCreationActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(ProfileCreationActivity.this, "Failure "+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode ==  RESULT_OK){
-            if(requestCode == REQUEST_ADDRESS){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_ADDRESS) {
                 extras = data.getExtras();
-              tv_address.setText(extras.getString(PlaceSelectionActivity.ADDRESS_EXTRA));
+                tv_address.setText(extras.getString(PlaceSelectionActivity.ADDRESS_EXTRA));
                 tv_lat.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LAT_EXTRA)));
                 tv_lng.setText(String.valueOf(extras.getDouble(PlaceSelectionActivity.LNG_EXTRA)));
                 Toast.makeText(this, "", Toast.LENGTH_SHORT).show();

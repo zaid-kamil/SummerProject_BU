@@ -55,7 +55,10 @@
 
         <service
             android:name=".FetchAddressService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".FeedbackActivity"></activity>
     </application>
 
 </manifest>
