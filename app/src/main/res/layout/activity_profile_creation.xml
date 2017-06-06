@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:background="@color/tw__composer_red">
 
+
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -326,7 +328,19 @@
 
             </LinearLayout>
 
+
         </ScrollView>
     </android.support.v4.widget.NestedScrollView>
 
+    <FrameLayout
+        android:id="@+id/f_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/prg_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal" />
+    </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

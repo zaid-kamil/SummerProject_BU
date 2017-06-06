@@ -1,5 +1,6 @@
 package trainedge.bu_pro;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -14,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -59,16 +61,18 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     private EditText et_pname;
     private Map<String, String> myringtone;
     private Map<String, String> mynotification;
+    private View container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_profile_creation);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        container = findViewById(R.id.f_container);
+        container.setVisibility(View.GONE);
+
         et_pname = (EditText) findViewById(R.id.et_pname);
         tv_lat = (TextView) findViewById(R.id.tv_lat);
         tv_lng = (TextView) findViewById(R.id.tv_lng);
@@ -173,6 +177,12 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     }
 
     private void validateData() {
+        container.setVisibility(View.VISIBLE);
+       /* ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Wait for a while");
+        dialog.show();
+        dialog.setCancelable(false);
+*/
         //show  progess
         String address = tv_address.getText().toString().trim();
         if (address.isEmpty()) {
@@ -215,6 +225,10 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             ), new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    container.setVisibility(View.GONE);
+                    //if(dialog.isShowing()){
+                      //  dialog.dismiss();
+                    //}
                     //hide progrss bar
                     if (databaseError == null) {
                         Toast.makeText(ProfileCreationActivity.this, "profile created", Toast.LENGTH_SHORT).show();
