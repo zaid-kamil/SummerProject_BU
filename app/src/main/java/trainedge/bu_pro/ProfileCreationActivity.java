@@ -1,6 +1,5 @@
 package trainedge.bu_pro;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -15,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -45,7 +43,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     private Spinner spr_ringtone, spr_notification;
     public Map<String, String> list;
 
-    private SeekBar seekbar1 = null;
+    private SeekBar seekbar1;
 
 
     private AudioManager audioManager = null;
@@ -62,6 +60,8 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     private Map<String, String> myringtone;
     private Map<String, String> mynotification;
     private View container;
+    private String ringtone;
+    private String notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,47 +120,12 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             }
         });
         switch_silent.setOnCheckedChangeListener(this);
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
 //        initControls();
 
     }
 
 
-    /*
-    * private void initControls() {
-          try
-          {
-              seekbar1 = (SeekBar)findViewById(R.id.seekbar1);
-              audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-              seekbar1.setMax(audioManager
-                      .getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-              seekbar1.setProgress(audioManager
-                      .getStreamVolume(AudioManager.STREAM_MUSIC));
-
-
-              seekbar1.setOnSeekBarChangeListener(new OnseekBar1ChangeListener()
-              {
-                  @Override
-                  public void onStopTrackingTouch(SeekBar arg0)
-                  {
-                  }
-
-                  @Override
-                  public void onStartTrackingTouch(SeekBar arg0)
-                  {
-                  }
-
-                  @Override
-                  public void onProgressChanged(SeekBar arg0, int progress, boolean arg2)
-                  {
-                      audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                              progress, 0);
-                  }
-              });
-
-      }
-
-  */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -177,7 +142,7 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
     }
 
     private void validateData() {
-        container.setVisibility(View.VISIBLE);
+
        /* ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("Wait for a while");
         dialog.show();
@@ -207,62 +172,64 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             return;
         }
         if (switch_silent.isChecked()) {
+            ringtone = "";
+            notification = "";
+            disableOtherOption();
+            saveProfile(address, lat, lng, pname, ringtone, notification, seekbar1.getProgress());
 
         } else {
             String key = spr_ringtone.getSelectedItem().toString();
-            String ringtone = myringtone.get(key);
+            ringtone = myringtone.get(key);
             String key2 = spr_notification.getSelectedItem().toString();
-            String notification = mynotification.get(key2);
+            notification = mynotification.get(key2);
 
-            final double latVal = Double.parseDouble(lat);
-            final double lngVal = Double.parseDouble(lng);
-
-            if(switch_silent.isChecked()== true)
-            {
-                ringtone = null;
-                notification = null;
-                seekbar1 = null;
-
-            }
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            final DatabaseReference dbref = db.getReference(PROFILE);
-            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            dbref.child(uid).push().setValue(new SoundProfile(
-                    address, ringtone, notification, pname, latVal, lngVal, switch_silent.isChecked(), switch_vibrate.isChecked(), false, seekbar1.getProgress()
-            ), new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    container.setVisibility(View.GONE);
-                    //if(dialog.isShowing()){
-                      //  dialog.dismiss();
-                    //}
-                    //hide progrss bar
-                    if (databaseError == null) {
-                        Toast.makeText(ProfileCreationActivity.this, "profile created", Toast.LENGTH_SHORT).show();
-                        //setup geofire for geofencing
-                        DatabaseReference geofireRef = dbref.child(uid).child("geofire");
-                        GeoFire geoFire = new GeoFire(geofireRef);
-                        geoFire.setLocation(pname, new GeoLocation(latVal, lngVal), new GeoFire.CompletionListener() {
-                            @Override
-                            public void onComplete(String key, DatabaseError error) {
-                                if (error == null) {
-                                    Toast.makeText(ProfileCreationActivity.this, "geofence created", Toast.LENGTH_SHORT).show();
-                                    finish();
-
-                                } else {
-                                    Toast.makeText(ProfileCreationActivity.this, "Geofence could not be created", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                    } else {
-                        Toast.makeText(ProfileCreationActivity.this, "Failure " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            saveProfile(address, lat, lng, pname, ringtone, notification, seekbar1.getProgress());
         }
 
 
+    }
+
+    private void saveProfile(String address, String lat, String lng, final String pname, String ringtone, String notification, int volume) {
+        container.setVisibility(View.VISIBLE);
+
+        final double latVal = Double.parseDouble(lat);
+        final double lngVal = Double.parseDouble(lng);
+
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        final DatabaseReference dbref = db.getReference(PROFILE);
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        dbref.child(uid).push().setValue(new SoundProfile(
+                address, ringtone, notification, pname, latVal, lngVal, switch_silent.isChecked(), switch_vibrate.isChecked(), false, volume), new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                container.setVisibility(View.GONE);
+                //if(dialog.isShowing()){
+                //  dialog.dismiss();
+                //}
+                //hide progrss bar
+                if (databaseError == null) {
+                    Toast.makeText(ProfileCreationActivity.this, "profile created", Toast.LENGTH_SHORT).show();
+                    //setup geofire for geofencing
+                    DatabaseReference geofireRef = dbref.child(uid).child("geofire");
+                    GeoFire geoFire = new GeoFire(geofireRef);
+                    geoFire.setLocation(pname, new GeoLocation(latVal, lngVal), new GeoFire.CompletionListener() {
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+                            if (error == null) {
+                                Toast.makeText(ProfileCreationActivity.this, "geofence created", Toast.LENGTH_SHORT).show();
+                                finish();
+
+                            } else {
+                                Toast.makeText(ProfileCreationActivity.this, "Geofence could not be created", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    Toast.makeText(ProfileCreationActivity.this, "Failure " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
