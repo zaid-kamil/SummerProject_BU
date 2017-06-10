@@ -217,6 +217,13 @@ public class ProfileCreationActivity extends AppCompatActivity implements View.O
             final double latVal = Double.parseDouble(lat);
             final double lngVal = Double.parseDouble(lng);
 
+            if(switch_silent.isChecked()== true)
+            {
+                ringtone = null;
+                notification = null;
+                seekbar1 = null;
+
+            }
             FirebaseDatabase db = FirebaseDatabase.getInstance();
             final DatabaseReference dbref = db.getReference(PROFILE);
             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();

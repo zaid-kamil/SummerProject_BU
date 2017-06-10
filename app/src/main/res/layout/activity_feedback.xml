@@ -18,13 +18,16 @@
             android:gravity="center"
             android:textSize="20dp"
             android:textColor="@color/tw__composer_black"
+            android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="We would like to "/>
+            android:text="We would like to collect your feedback
+                which will help us in improving our application."/>
 
 
         <ImageView
+            android:id="@+id/img"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center"

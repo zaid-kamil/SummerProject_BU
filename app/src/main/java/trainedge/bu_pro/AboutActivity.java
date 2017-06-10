@@ -9,6 +9,8 @@ import android.widget.Button;
 public class AboutActivity extends AppCompatActivity {
 
     Button btn_feed;
+    private Button btn_share;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +21,18 @@ public class AboutActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i= new Intent(AboutActivity.this,FeedbackActivity.class);
                 startActivity(i);
+            }
+        });
+        btn_share = (Button) findViewById(R.id.btn_share);
+        btn_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "Here is the share content body";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
 
             }
         });
