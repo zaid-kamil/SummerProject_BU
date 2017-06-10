@@ -4,85 +4,88 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_dark"
     tools:context="trainedge.bu_pro.ProfileCreationActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                android:textColor="@color/tw__composer_black"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:text="Profile Manager is an application which
-    automatically updates your sound
-           profile according to your
-             location as specified
-                       by you!!!"
-                android:textSize="20dp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:background="@drawable/card_border"
+            android:fontFamily="sans-serif-smallcaps"
+            android:padding="8dp"
+            android:text="Profile Manager is an application which automatically updates your sound profile according to your location as specified by you!!!"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Button"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="30dp"
-            android:background="@android:color/darker_gray"/>
+            android:background="@android:color/darker_gray" />
 
         <Button
+            android:id="@+id/btn_rate"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/card_border"
+
+            android:drawableLeft="@drawable/rate1"
             android:text="Rate Us"
             android:textSize="20dp"
-            android:textStyle="bold"
-            android:drawableLeft="@drawable/rate1"
+            android:textStyle="bold" />
 
-            style="?android:attr/borderlessButtonStyle"
-            />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/darker_gray"/>
+            android:background="@android:color/darker_gray" />
+
         <Button
             android:id="@+id/btn_feed"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Feedback"
-            android:textSize="20dp"
-            android:textStyle="bold"
+            android:layout_margin="16dp"
+            android:background="@drawable/card_border"
             android:drawableLeft="@drawable/feedback2"
             android:drawablePadding="2dp"
-            style="?android:attr/borderlessButtonStyle"
-            />
+            android:text="Feedback"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/darker_gray"/>
+            android:background="@android:color/darker_gray" />
+
         <Button
             android:id="@+id/btn_share"
-            android:layout_width="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="invite Friends"
-            android:textSize="20dp"
-            android:textStyle="bold"
+            android:layout_margin="16dp"
+            android:background="@drawable/card_border"
             android:drawableLeft="@drawable/share2"
             android:drawablePadding="8dp"
-            style="?android:attr/borderlessButtonStyle"
-            />
+            android:text="invite Friends"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/darker_gray"/>
-
+            android:background="@android:color/darker_gray" />
 
 
     </LinearLayout>

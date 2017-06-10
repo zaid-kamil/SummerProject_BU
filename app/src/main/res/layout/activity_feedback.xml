@@ -13,27 +13,6 @@
         android:orientation="vertical">
 
 
-        <TextView
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:textColor="@color/tw__composer_black"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="We would like to collect your feedback
-                which will help us in improving our application."/>
-
-
-        <ImageView
-            android:id="@+id/img"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:background="@drawable/logo1"
-            />
-
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -52,29 +31,30 @@
 
 
         <EditText
+            android:id="@+id/editText"
             android:layout_width="fill_parent"
             android:layout_height="150dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/colorPrimaryDark"
+            android:breakStrategy="balanced"
+            android:fitsSystemWindows="true"
             android:gravity="top"
             android:hint="Your Message"
-            android:fitsSystemWindows="true"
-            android:breakStrategy="balanced"
             android:inputType="textMultiLine"
-            android:singleLine="false"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:singleLine="false" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="211dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@color/colorPrimaryDark"
-            android:elevation="4dp"
+            android:background="@drawable/card"
             android:paddingLeft="70dp"
             android:paddingRight="70dp"
             android:text="Submit"
-            android:textColor="#fff" />
+            android:textColor="#fff"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>
 
