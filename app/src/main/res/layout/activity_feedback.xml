@@ -13,21 +13,78 @@
         android:orientation="vertical">
 
 
-        <EditText
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="368dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimaryDark"
-            android:hint="Name"
-            android:inputType="textPersonName" />
+            android:text="What do you think of our App?"
+            android:textSize="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"/>
 
-        <EditText
+
+        <View
+            android:layout_width="368dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="16dp"/>
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:clickable="true"
+                android:layout_marginLeft="8dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/f2"/>
+
+            <ImageView
+                android:clickable="true"
+                android:layout_marginLeft="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/f3"/>
+
+
+            <ImageView
+                android:clickable="true"
+                android:layout_marginLeft="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/f1"/>
+
+            <ImageView
+                android:clickable="true"
+                android:layout_marginLeft="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/f5"/>
+
+            <ImageView
+                android:clickable="true"
+                android:layout_marginLeft="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/f4"/>
+        </LinearLayout>
+
+
+        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
+            android:textSize="18dp"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
+            android:hint="What would you like to share with us?"
+             />
+        <View
+            android:layout_width="368dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="16dp"/>
 
 
         <EditText
@@ -36,6 +93,7 @@
             android:layout_height="150dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
+            android:background="@drawable/card_sample_layout"
             android:backgroundTint="@color/colorPrimaryDark"
             android:breakStrategy="balanced"
             android:fitsSystemWindows="true"
@@ -51,6 +109,7 @@
             android:layout_gravity="center_horizontal"
             android:background="@drawable/card"
             android:paddingLeft="70dp"
+            android:layout_marginTop="50dp"
             android:paddingRight="70dp"
             android:text="Submit"
             android:textColor="#fff"

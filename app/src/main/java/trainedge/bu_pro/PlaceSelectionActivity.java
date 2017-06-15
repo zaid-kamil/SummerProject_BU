@@ -93,7 +93,9 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
 
     }
 
+    // CHECK ANDROID VERSION
     private void handlePermission() {
+        //FOR MARSHMALLOW AND LOLLIPOP
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
