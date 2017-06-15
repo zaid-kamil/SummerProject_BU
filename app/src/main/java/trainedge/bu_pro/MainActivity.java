@@ -65,11 +65,13 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
                 startActivity(i);
             }
         });
+        startService(new Intent(this,LocationService.class));
     }
 
     public static Intent createIntent(Context context, IdpResponse response) {
         return new Intent(context, MainActivity.class);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

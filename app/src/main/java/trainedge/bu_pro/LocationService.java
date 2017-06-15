@@ -1,80 +1,80 @@
 package trainedge.bu_pro;
 
-import android.*;
 import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class LocationService extends Service implements LocationListener{
+public class LocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
+    public final String service;
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
-    private static final int REQUEST_CHECK_SETTINGS = 510;
     private Location location;
-
-    public LocationService() {
-
-    }
+    private Location mCurrentLocation;
+    //SOUNDPROFILE MANAGER SP
+    SoundProfileManager spm;
 
     @Override
     public IBinder onBind(Intent intent) {
-
         return null;
+    }
+
+    public LocationService() {
+        service = "MyLocationService";
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        buildGoogleApiClient();
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
         getUsersLocation();
         return START_REDELIVER_INTENT;
     }
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+    private void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                          .addConnectionCallbacks(this)
+                           .addOnConnectionFailedListener(this)
+                           .addApi(LocationServices.API).build();
     }
 
-    private void handleLocationSetting() {
-
-        createLocationRequest();
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
-                        builder.build());
-
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult lsResult) {
-                final Status status = lsResult.getStatus();
-                LocationSettingsStates states = lsResult.getLocationSettingsStates();
-
-            }
-        });
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(30000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void startLocationUpdates() {
@@ -82,13 +82,46 @@ public class LocationService extends Service implements LocationListener{
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
-
     }
     @Override
     public void onLocationChanged(Location location) {
-        this.location = location;
-        Toast.makeText(this, location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        displayLocation(location);
+    handle_geofire(location);
+    }
+
+    private void handle_geofire(Location location) {
+        mCurrentLocation = location;
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("soundprofiles").child(uid).child("geofire");
+
+        GeoFire geofire = new GeoFire(ref);
+        GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(location.getLatitude(),location.getLongitude()),0.5);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                spm.changeSoundProfile(GeofenceService.this,key,location);
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                spm.setToDefault(key);
+                Toast.makeText(LocationService.this, "+", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
     }
 
     private void displayLocation(Location location) {
@@ -96,7 +129,8 @@ public class LocationService extends Service implements LocationListener{
     }
 
 
-    private void stopLocationUpdates() {
+    private void stopLocationUpdates()
+    {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -104,6 +138,34 @@ public class LocationService extends Service implements LocationListener{
     private void getUsersLocation() {
        handleLocationSetting();
 
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+     LocationSettingsRequest.Builder builder = new LocationSettingsRequest().addLocationRequest(mLocationRequest);
+        if(!Geocoder.isPresent()){
+            Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+            return;
+        }
+        createLocationRequest();
+        try {
+            startLocationUpdates();
+        }
+        catch (Exception e){
+
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Network Disconnected", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+        Toast.makeText(this, "Network Failed "+ connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 }
 

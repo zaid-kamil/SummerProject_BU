@@ -96,6 +96,7 @@
         viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec
         tortor.
     </string>
+    <string name="no_geocoder_available">No geocoder availablet o access</string>
 
 </resources>
 
