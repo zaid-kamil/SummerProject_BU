@@ -43,7 +43,6 @@ public class LocationService extends Service implements LocationListener, Google
     private GoogleApiClient mGoogleApiClient;
     private Location location;
     private Location mCurrentLocation;
-    //SOUNDPROFILE MANAGER SP
     SoundProfileManager spm;
 
     @Override
@@ -58,16 +57,19 @@ public class LocationService extends Service implements LocationListener, Google
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         buildGoogleApiClient();
+        spm=new SoundProfileManager(this);
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
-        getUsersLocation();
         return START_REDELIVER_INTENT;
     }
 
     private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                          .addConnectionCallbacks(this)
-                           .addOnConnectionFailedListener(this)
-                           .addApi(LocationServices.API).build();
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+        if(mGoogleApiClient!=null && !mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
     }
 
     protected void createLocationRequest() {
@@ -81,11 +83,12 @@ public class LocationService extends Service implements LocationListener, Google
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,  this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
+
     @Override
     public void onLocationChanged(Location location) {
-    handle_geofire(location);
+        handle_geofire(location);
     }
 
     private void handle_geofire(Location location) {
@@ -94,11 +97,12 @@ public class LocationService extends Service implements LocationListener, Google
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("soundprofiles").child(uid).child("geofire");
 
         GeoFire geofire = new GeoFire(ref);
-        GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(location.getLatitude(),location.getLongitude()),0.5);
+        GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(location.getLatitude(), location.getLongitude()), 0.2);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                spm.changeSoundProfile(GeofenceService.this,key,location);
+                spm.changeSoundProfile(LocationService.this, key, location);
+                Toast.makeText(LocationService.this, "key "+key, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -124,34 +128,16 @@ public class LocationService extends Service implements LocationListener, Google
         });
     }
 
-    private void displayLocation(Location location) {
-        LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-    }
-
-
-    private void stopLocationUpdates()
-    {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-    }
-    private void getUsersLocation() {
-       handleLocationSetting();
-
-    }
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-     LocationSettingsRequest.Builder builder = new LocationSettingsRequest().addLocationRequest(mLocationRequest);
-        if(!Geocoder.isPresent()){
+        if (!Geocoder.isPresent()) {
             Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
             return;
         }
         createLocationRequest();
         try {
             startLocationUpdates();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -165,7 +151,7 @@ public class LocationService extends Service implements LocationListener, Google
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-        Toast.makeText(this, "Network Failed "+ connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Network Failed " + connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 }
 

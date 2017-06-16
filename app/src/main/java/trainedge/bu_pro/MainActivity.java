@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         mylist = new ArrayList<>();
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-
         DatabaseReference dbRef = db.getReference("soundprofiles").child(uid);
         dbRef.addValueEventListener(this);
         adapter = new MyAdapter();
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
                 startActivity(i);
             }
         });
-        startService(new Intent(this,LocationService.class));
+        startService(new Intent(this, LocationService.class));
     }
 
     public static Intent createIntent(Context context, IdpResponse response) {
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
 
-                if (snapshot.getKey() == "geofire") {
+                if (snapshot.getKey().equalsIgnoreCase("geofire")) {
                     continue;
                 }
                 mylist.add(snapshot.getValue(SoundProfile.class));
@@ -127,12 +127,13 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     class Holder extends RecyclerView.ViewHolder {
 
         TextView tv_name, tv_loc;
+        ImageView img_icon;
 
         public Holder(View itemView) {
             super(itemView);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_loc = (TextView) itemView.findViewById(R.id.tv_loc);
-
+            img_icon = (ImageView) itemView.findViewById(R.id.img_icon);
         }
 
 
@@ -152,8 +153,11 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
             SoundProfile s = mylist.get(position);
             holder.tv_name.setText(s.getProfile());
             holder.tv_loc.setText(s.getAddress());
-
-
+            if (s.isActive()) {
+                holder.img_icon.setImageResource(R.drawable.ic_brightness_1_black_24dp);
+            } else {
+                holder.img_icon.setImageResource(R.drawable.inactive);
+            }
         }
 
         @Override

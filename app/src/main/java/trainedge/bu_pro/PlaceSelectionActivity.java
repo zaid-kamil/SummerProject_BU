@@ -187,7 +187,7 @@ public class PlaceSelectionActivity extends FragmentActivity implements OnMapRea
     private void displayLocation(Location location) {
         // Add a marker in Sydney and move the camera
         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(myLocation).title("Marker in Sydney"));
+        mMap.addMarker(new MarkerOptions().position(myLocation).title("Your current location"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17));
         CircleOptions co = new CircleOptions();
         co.center(myLocation);
