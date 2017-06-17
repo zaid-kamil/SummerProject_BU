@@ -3,6 +3,7 @@ package trainedge.bu_pro;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
     private RecyclerView r_view;
     private ArrayList<SoundProfile> mylist;
     private MyAdapter adapter;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +51,11 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         r_view = (RecyclerView) findViewById(R.id.r_view);
         r_view.setLayoutManager(new LinearLayoutManager(this));
         mylist = new ArrayList<>();
-        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbRef = db.getReference("soundprofiles").child(uid);
         dbRef.addValueEventListener(this);
@@ -88,6 +94,20 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
                 startActivity(i);
                 // Do whatever you want to do on logout click.
                 return true;
+
+            case R.id.logout_menu:
+                AuthUI.getInstance()
+                        .signOut(this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // user is now signed out
+                                startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                                finish();
+                            }
+                        });
+                return true;
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -126,14 +146,22 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
 
     class Holder extends RecyclerView.ViewHolder {
 
+        ImageView ivDel;
+        TextView tvSilent;
+        TextView tvVib;
+        TextView tvVol;
         TextView tv_name, tv_loc;
         ImageView img_icon;
 
         public Holder(View itemView) {
             super(itemView);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
+            tvSilent = (TextView) itemView.findViewById(R.id.tvSilent);
+            tvVib = (TextView) itemView.findViewById(R.id.tvVib);
+            tvVol = (TextView) itemView.findViewById(R.id.tvVolume);
             tv_loc = (TextView) itemView.findViewById(R.id.tv_loc);
             img_icon = (ImageView) itemView.findViewById(R.id.img_icon);
+            ivDel = (ImageView) itemView.findViewById(R.id.ivDel);
         }
 
 
@@ -150,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
         @Override
         public void onBindViewHolder(Holder holder, int position) {
 
-            SoundProfile s = mylist.get(position);
+            final SoundProfile s = mylist.get(position);
             holder.tv_name.setText(s.getProfile());
             holder.tv_loc.setText(s.getAddress());
             if (s.isActive()) {
@@ -158,6 +186,43 @@ public class MainActivity extends AppCompatActivity implements ValueEventListene
             } else {
                 holder.img_icon.setImageResource(R.drawable.inactive);
             }
+            String silent = s.isSilent() ? "on" : "off";
+            holder.tvSilent.setText("Silent Mode " + silent);
+            String vib = s.isVibrate() ? "on" : "off";
+            holder.tvVib.setText("Vibrate Mode " + vib);
+            holder.tvVol.setText("Volume " + s.getVolume());
+            holder.ivDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("soundprofiles").child(uid);
+                    ref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChildren()) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    if (snapshot.getKey().equalsIgnoreCase("geofire")) {
+                                        snapshot.child("geofire").getRef().child(s.getProfile()).removeValue();
+                                        continue;
+                                    }
+                                    SoundProfile profile = snapshot.getValue(SoundProfile.class);
+                                    if (profile.getProfile().equalsIgnoreCase(s.getProfile())) {
+                                        snapshot.getRef().removeValue();
+                                    }
+                                }
+                            }
+                        }
+
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (databaseError != null)
+                                Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+            });
+
         }
 
         @Override

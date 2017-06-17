@@ -56,9 +56,13 @@ public class LocationService extends Service implements LocationListener, Google
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        buildGoogleApiClient();
-        spm=new SoundProfileManager(this);
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "login to get updates", Toast.LENGTH_SHORT).show();
+        } else {
+            buildGoogleApiClient();
+            spm = new SoundProfileManager(this);
+            Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
+        }
         return START_REDELIVER_INTENT;
     }
 
@@ -67,15 +71,15 @@ public class LocationService extends Service implements LocationListener, Google
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API).build();
-        if(mGoogleApiClient!=null && !mGoogleApiClient.isConnected()){
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
     }
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(30000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(10 * 60000);
+        mLocationRequest.setFastestInterval(10 * 30000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -101,8 +105,9 @@ public class LocationService extends Service implements LocationListener, Google
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
+                Toast.makeText(LocationService.this, "key " + key, Toast.LENGTH_SHORT).show();
                 spm.changeSoundProfile(LocationService.this, key, location);
-                Toast.makeText(LocationService.this, "key "+key, Toast.LENGTH_SHORT).show();
+
             }
 
             @Override

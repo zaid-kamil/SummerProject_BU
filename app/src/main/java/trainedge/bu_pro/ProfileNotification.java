@@ -22,10 +22,12 @@ public class ProfileNotification {
         final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.logo1);
         final String ticker = exampleString;
         final String title = "Profile manager active";
-        final String text = "App that chages profile automatically.";
+        final String text = "Your app is running.";
+        Intent pi = new Intent(context, SplashActivity.class);
+        pi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setSmallIcon(R.drawable.ic_stat_profile)
+                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_ONGOING_EVENT | Notification.FLAG_INSISTENT | Notification.FLAG_NO_CLEAR)
+                .setSmallIcon(R.drawable.logo1)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -33,7 +35,7 @@ public class ProfileNotification {
                 .setContentIntent(PendingIntent.getActivity(
                         context,
                         0,
-                        new Intent(new Intent(context, SplashActivity.class)),
+                        pi,
                         PendingIntent.FLAG_UPDATE_CURRENT))
                 .setAutoCancel(true);
 

@@ -75,11 +75,17 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_main">Home</string>
-    <string name="facebook_application_id" translatable="false">1239348297101092</string>
+
+
+
+    <string name="facebook_application_id" translatable="false">1329348297101092</string>
     <!-- Facebook Application ID, prefixed by 'fb'.  Enables Chrome Custom tabs. -->
-    <string name="facebook_login_protocol_scheme" translatable="false">fb1239348297101092</string>
-    <string name="twitter_consumer_key" translatable="false">YOURCONSUMERKEY</string>
-    <string name="twitter_consumer_secret" translatable="false">YOURCONSUMERSECRET</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb1329348297101092</string>
+
+    <string name="twitter_consumer_key" translatable="false">hZY6Oi77IWUZSX3mLb8kalfay</string>
+    <string name="twitter_consumer_secret" translatable="false">nfZkxP3Q0ZljIiXsDVZX5ZF145zPo9n3v6phcTwm2UQpO3ebgV</string>
+
+
     <string name="title_activity_place_selection">Select a location</string>
     <string name="service_not_available">service Not available</string>
     <string name="invalid_lat_long_used">Invalid Longitude and Latitude</string>
@@ -97,6 +103,7 @@
         tortor.
     </string>
     <string name="no_geocoder_available">No geocoder availablet o access</string>
+
 
 </resources>
 

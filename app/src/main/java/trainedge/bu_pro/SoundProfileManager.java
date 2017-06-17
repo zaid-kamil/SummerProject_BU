@@ -3,6 +3,8 @@ package trainedge.bu_pro;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoLocation;
@@ -43,6 +45,7 @@ class SoundProfileManager {
                         SoundProfile profile = snapshot.getValue(SoundProfile.class);
                         if (profile.getProfile().equalsIgnoreCase(key)) {
                             if (!profile.isActive()) {
+                                snapshot.child("active").getRef().setValue(true);
                                 updateSoundProfile(profile);
                             }
                         }
@@ -72,12 +75,47 @@ class SoundProfileManager {
         } else if (isVibrate) {
             profileMode.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         } else {
+            int volume = soundProfile.getVolume();
+            String msgtone = soundProfile.getRingtone();
+            String ringtone = soundProfile.getRingtone();
+            profileMode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            try {
+                RingtoneManager.setActualDefaultRingtoneUri(
+                        context,
+                        RingtoneManager.TYPE_RINGTONE,
+                        Uri.parse(ringtone)
+                );
+                RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_NOTIFICATION, Uri.parse(msgtone));
+            } catch (Exception e) {
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            profileMode.setStreamVolume(AudioManager.STREAM_RING, volume, 0);
 
         }
+        ProfileNotification.notify(context, "Sound Profile loaded ->" + name);
+
 
     }
 
     public void setToDefault(String key) {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference profileRef = FirebaseDatabase.getInstance().getReference("soundprofiles").child(uid).child(key);
+        profileRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    dataSnapshot.getRef().child("state").setValue(false);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+                Toast.makeText(SoundProfileManager.this.context, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
     }
 }
